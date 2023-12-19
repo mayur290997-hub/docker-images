@@ -1,0 +1,111 @@
+<project xmlns:props="antlib:org.apache.ant.props" name="Oracle Banking Digital eXperience" basedir=".">
+
+<description>Build for Oracle Banking Digital eXperience</description>
+<taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+    <taskdef resource="net/sf/antcontrib/antlib.xml"/>
+    <property environment="env"/>
+<property name="JAVA_HOME" value="/home/devops/jdk1.8.0_241/bin"/>
+<property name="work_path" value="/scratch/obdx/policy"/>
+<property name="work_path_IT" value="/scratch/obdx/policy"/>
+<property environment="env"/>
+<property file="/scratch/obdx/flywayscripts/R20.1.0.0.0_DEV.properties" />
+		
+<property name="sql.driver" value="oracle.jdbc.driver.OracleDriver"/>
+<property name="sql.url" value="${JDBCURL}"/>
+<property name="sql.user" value="${DB_SCHEMA}"/>
+<property name="sql.pass" value="${SCHEMA_PASSWORD}"/>
+<property name="oracle.bin.dir" value=""/>
+
+
+	<target name="sql_execution">
+      <sql driver="${sql.driver}" url="${sql.url}" userid="${sql.user}" password="${sql.pass}" onerror="continue" >
+           <classpath>
+            <pathelement location="${work_path}/jars/lib/ojdbc8.jar"/>
+           </classpath>  
+           <transaction src="${work_path}/cleanup.sql" />
+      </sql>
+   </target>
+  
+	<target name="sql_execution_IT">
+      <sql driver="${sql.driver}" url="${sql.url}" userid="${sql.user}" password="${sql.pass}" onerror="continue" >
+           <classpath>
+            <pathelement location="${work_path_IT}/jars/lib/ojdbc8.jar"/>
+           </classpath>  
+           <transaction src="${work_path_IT}/cleanup.sql" />
+      </sql>
+   </target>
+	
+	<target name="seedpolicies_jar_run">
+
+		<java dir="${work_path}"
+			jar="${work_path}/jars/SeedPolicies.jar" fork="true">
+			<arg value="${work_path}/Clip.csv,${work_path}/Admin.csv" />
+			<arg value="CLIP,ADMIN" />
+			<arg value="${work_path}/policy_logs/" />
+			<arg value="JOB-oracle.jdbc.OracleDriver,${DB_SCHEMA},${SCHEMA_PASSWORD},${JDBCURL}" />
+		</java>
+	</target>
+	
+	<target name="entitlement_jar_run">
+
+		<java dir="${work_path}"
+			jar="${work_path}/jars/com.ofss.digx.utils.entitlement.feed.data.jar" fork="true">
+			<arg value="${work_path}/Resources.csv,${work_path}/Entitlement.csv,${work_path}/Day0Policy.csv"/>
+			<arg value="KERNEL"/>
+			<jvmarg value="-Djava.util.logging.config.file=${work_path}/login_properties/logging_dev.properties"/>
+			<arg value="JOB-oracle.jdbc.OracleDriver,${DB_SCHEMA},${SCHEMA_PASSWORD},${JDBCURL}"/>
+		</java>
+	</target>
+	
+	<target name="Feed_data_task_jar_run">
+
+		<java dir="${work_path}"
+			jar="${work_path}/jars/com.ofss.digx.utils.feed.data.task.jar" fork="true">
+			<arg value="${work_path}/Task.csv" />
+			<jvmarg value="-Djava.util.logging.config.file=${work_path}/login_properties/logging_dev.properties"/>
+			<arg value="JOB-oracle.jdbc.OracleDriver,${DB_SCHEMA},${SCHEMA_PASSWORD},${JDBCURL}" />
+		</java>
+	</target>
+	
+	<target name="seedpolicies_jar_run_it">
+		<java dir="${work_path_IT}"
+			jar="${work_path_IT}/jars/SeedPolicies.jar" fork="true">
+			<arg value="${work_path_IT}/Clip.csv,${work_path_IT}/Admin.csv" />
+			<arg value="CLIP,ADMIN" />
+			<arg value="${work_path_IT}/policy_logs/" />			
+			<arg value="IT-oracle.jdbc.OracleDriver,${DB_SCHEMA},${SCHEMA_PASSWORD},${JDBCURL}" />		
+		</java>
+	</target>
+	
+	<target name="entitlement_jar_run_it">
+
+		<java dir="${work_path_IT}"
+			jar="${work_path_IT}/jars/com.ofss.digx.utils.entitlement.feed.data.jar" fork="true">
+			<arg value="${work_path_IT}/Resources.csv,${work_path_IT}/Entitlement.csv,${work_path_IT}/Day0Policy.csv"/>
+			<arg value="KERNEL"/>
+			<jvmarg value="-Djava.util.logging.config.file=${work_path_IT}/entitlement_feed_data/logging_dev.properties"/>
+			<arg value="oracle.jdbc.OracleDriver,${DB_SCHEMA},${SCHEMA_PASSWORD},${JDBCURL}"/>
+		</java>
+	</target>
+	
+   <target name="dashboard_seed_jar_run_it">
+
+		<java dir="${work_path_IT}"
+			jar="${work_path_IT}/jars/com.ofss.digx.utils.dashboard.jar" fork="true">
+			<arg value="${work_path_IT}/jars/dashboard_json"/>
+			<arg value="oracle.jdbc.OracleDriver,${DB_SCHEMA},${SCHEMA_PASSWORD},${JDBCURL}"/>
+			<jvmarg value="-Djava.util.logging.config.file=${work_path_IT}/dashboard_seeding/logging.properties"/>
+		</java>
+	</target>
+	
+	<target name="Feed_data_task_jar_run_it">
+
+		<java dir="${work_path_IT}"
+			jar="${work_path_IT}/jars/com.ofss.digx.utils.feed.data.task.jar" fork="true">
+			<arg value="${work_path_IT}/Task.csv" />
+			<jvmarg value="-Djava.util.logging.config.file=${work_path_IT}/feed_data_task/logging_dev.properties"/>	
+			<arg value="oracle.jdbc.OracleDriver,${DB_SCHEMA},${SCHEMA_PASSWORD},${JDBCURL}"/>
+		</java>
+	</target>
+	
+</project>

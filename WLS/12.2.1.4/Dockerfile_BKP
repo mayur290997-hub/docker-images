@@ -1,0 +1,45 @@
+FROM $baseOsImage
+
+MAINTAINER $maintainer
+
+RUN groupadd -g 1000  $osUsrGroup && \
+    useradd -d $osUsrHomeDir -u 1000 -g $osUsrGroup -m -s /bin/bash $osUsrName && \
+	mkdir -p $obdxDir && \ 
+	chmod -R 777 $obdxDir/  && \
+    echo "proxy=$proxyAddress" >> /etc/yum.conf && \
+    echo "http_proxy = $proxyAddress" >> /etc/wgetrc && \
+    yum -y  install $yumInstallList1 && $yumInstallList2 && $yumInstallList3 && \
+	yum -y install $yumInstallList4	
+
+ENV HTTP_PROXY "$proxyAddress"
+ENV	HTTPS_PROXY	"$proxyAddress"
+
+
+RUN python -m pip install $pythonInstallList
+
+
+USER $osUsrName
+
+ENV USR_HOME=$osUsrHomeDir				\
+	JAVA_HOME=$javaHomeDir				\
+	ORACLE_HOME=$oracleWlsHomeDir		\
+	SOFTWAREDIR=$softwareDir     		\
+	SCRIPTDIR=$scriptsDir				\
+	FMW_JAR=$fmwWlsJarName				\
+    LD_LIBRARY_PATH=$libraryPath:$LD_LIBRARY_PATH
+
+
+RUN  mkdir -p ${SOFTWAREDIR} &&\
+	 cd ${USR_HOME} &&\
+	 wget --no-proxy $softwareJavaUrl/$javaZipName &&\
+	 unzip -oq $javaZipName &&\
+	 rm -rf $javaZipName &&\
+	 chmod -R 755 ${JAVA_HOME}  && \
+	 cd ${SOFTWAREDIR} &&\
+	 wget --no-proxy $softwareWlsUrl/$wlsZipName &&\
+	 unzip -oq $wlsZipName &&\
+	 rm -rf $wlsZipName &&\
+	 chmod 755 ${SOFTWAREDIR}/${FMW_JAR} && \
+	 $JAVA_HOME/bin/java -jar  ${SOFTWAREDIR}/${FMW_JAR} -silent -responseFile ${SOFTWAREDIR}/install.file -invPtrLoc ${SOFTWAREDIR}/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE="WebLogic Server" && \
+	 rm -rf ${FMW_JAR} 
+

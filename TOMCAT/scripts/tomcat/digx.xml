@@ -1,0 +1,306 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context>
+	<JarScanner>
+		<JarScanFilter tldSkip="*.*"/>
+	</JarScanner>
+	
+	<Resource name="OBDX_BU_B1A1" 
+    auth="Container" 
+    type="oracle.jdbc.pool.OracleDataSource" 
+    maxActive="100" 
+    maxIdle="30" 
+    maxWait="10000" 
+    user="${digx.db.b1a1.user}" 
+    password="${digx.secret.db.b1a1.password}" 
+    driverClassName="oracle.jdbc.OracleDriver"
+    factory="oracle.jdbc.pool.OracleDataSourceFactory" 
+    url="jdbc:oracle:thin:@${digx.db.b1a1.host}:${digx.db.b1a1.port}/${digx.db.b1a1.sid}" />
+	
+	<Resource name="DIGX" 
+    auth="Container" 
+    type="oracle.jdbc.pool.OracleDataSource" 
+    maxActive="100" 
+    maxIdle="30" 
+    maxWait="10000" 
+    user="${digx.db.digx.user}" 
+    password="${digx.secret.db.digx.password}" 
+    driverClassName="oracle.jdbc.OracleDriver"
+    factory="oracle.jdbc.pool.OracleDataSourceFactory" 
+    url="jdbc:oracle:thin:@${digx.db.digx.host}:${digx.db.digx.port}/${digx.db.digx.sid}"  />
+	
+	<Resource name="NONXA" 
+    auth="Container" 
+    type="oracle.jdbc.pool.OracleDataSource" 
+    maxActive="100" 
+    maxIdle="30" 
+    maxWait="10000" 
+    user="${digx.db.nonxa.user}" 
+    password="${digx.secret.db.nonxa.password}" 
+    driverClassName="oracle.jdbc.OracleDriver" 
+    factory="oracle.jdbc.pool.OracleDataSourceFactory"
+    url="jdbc:oracle:thin:@${digx.db.nonxa.host}:${digx.db.nonxa.port}/${digx.db.nonxa.sid}"  />
+	
+	<Resource name="SYSCONFIG" 
+    auth="Container" 
+    type="oracle.jdbc.pool.OracleDataSource" 
+    maxActive="100" 
+    maxIdle="30" 
+    maxWait="10000" 
+    user="${digx.db.sysconfig.user}" 
+    password="${digx.secret.db.sysconfig.password}" 
+    driverClassName="oracle.jdbc.OracleDriver" 
+    factory="oracle.jdbc.pool.OracleDataSourceFactory"
+    url="jdbc:oracle:thin:@${digx.db.sysconfig.host}:${digx.db.sysconfig.port}/${digx.db.sysconfig.sid}"  />
+	
+	<Resource name="AUDITQCF" 
+    auth="Container" 
+    type="org.apache.activemq.ActiveMQConnectionFactory" 
+    description="JMS Connection Factory" 
+    factory="org.apache.activemq.jndi.JNDIReferenceFactory" 
+    brokerURL="tcp://${digx.mq.host}:${digx.mq.port}" 
+    brokerName="OBDXMessageBroker" 
+    useEmbeddedBroker="false" 
+    trustAllPackages="true"/>
+
+	<Resource name="ReportsQCF"
+    auth="Container"
+    type="org.apache.activemq.ActiveMQConnectionFactory"
+    description="JMS Connection Factory"
+    factory="org.apache.activemq.jndi.JNDIReferenceFactory"
+    brokerURL="tcp://${digx.mq.host}:${digx.mq.port}"
+    brokerName="OBDXMessageBroker"
+    useEmbeddedBroker="false"
+    trustAllPackages="true"/>
+	
+	<Resource name="QCF"
+    auth="Container"
+    type="org.apache.activemq.ActiveMQConnectionFactory"
+    description="JMS Connection Factory"
+    factory="org.apache.activemq.jndi.JNDIReferenceFactory"
+    brokerURL="tcp://${digx.mq.host}:${digx.mq.port}"
+    brokerName="OBDXMessageBroker"
+    useEmbeddedBroker="false"
+    trustAllPackages="true"/>
+
+	<Resource name="PREPROCESS"
+    auth="Container"
+    type="org.apache.activemq.command.ActiveMQQueue"
+    factory="org.apache.activemq.jndi.JNDIReferenceFactory"
+    physicalName="PREPROCESS"/>
+	
+	<Resource name="RAPPROVAL"
+    auth="Container"
+    type="org.apache.activemq.command.ActiveMQQueue"
+    factory="org.apache.activemq.jndi.JNDIReferenceFactory"
+    physicalName="RAPPROVAL"/>
+	
+	<Resource name="REPORTSCHEDULED"
+    auth="Container"
+    type="org.apache.activemq.command.ActiveMQQueue"
+    factory="org.apache.activemq.jndi.JNDIReferenceFactory"
+    physicalName="REPORTSCHEDULED"/>
+	
+	<Resource name="REPORTADHOC"
+    auth="Container"
+    type="org.apache.activemq.command.ActiveMQQueue"
+    factory="org.apache.activemq.jndi.JNDIReferenceFactory"
+    physicalName="REPORTADHOC"/>
+	
+	<Resource name="API_AUDIT_QUEUE" 
+    auth="Container" 
+    type="org.apache.activemq.command.ActiveMQQueue" 
+    factory="org.apache.activemq.jndi.JNDIReferenceFactory" 
+    physicalName="API_AUDIT_QUEUE"/>
+	
+	<Resource name="AUDIT_QUEUE" 
+    auth="Container" 
+    type="org.apache.activemq.command.ActiveMQQueue" 
+    factory="org.apache.activemq.jndi.JNDIReferenceFactory" 
+    physicalName="AUDIT_QUEUE"/>
+	
+	<Resource name="ExtSystemSenderQCF" 
+    auth="Container" 
+    type="org.apache.activemq.ActiveMQConnectionFactory" 
+    description="JMS Connection Factory" 
+    factory="org.apache.activemq.jndi.JNDIReferenceFactory" 
+    brokerURL="tcp://${digx.mq.host}:${digx.mq.port}" 
+    brokerName="OBDXMessageBroker" 
+    useEmbeddedBroker="false" 
+    trustAllPackages="true"/>
+	
+	<Resource name="ExtSystemSenderQueue" 
+    auth="Container" 
+    type="org.apache.activemq.command.ActiveMQQueue" 
+    factory="org.apache.activemq.jndi.JNDIReferenceFactory" 
+    physicalName="ExtSystemSenderQueue"/>
+	
+	<Resource name="ExtSystemReceiverQCF" 
+    auth="Container" 
+    type="org.apache.activemq.ActiveMQConnectionFactory" 
+    description="JMS Connection Factory" 
+    factory="org.apache.activemq.jndi.JNDIReferenceFactory" 
+    brokerURL="tcp://${digx.mq.host}:${digx.mq.port}" 
+    brokerName="OBDXMessageBroker" 
+    useEmbeddedBroker="false" 
+    trustAllPackages="true"/>
+	
+	<Resource name="ExtSystemReceiverQueue" 
+    auth="Container" 
+    type="org.apache.activemq.command.ActiveMQQueue" 
+    factory="org.apache.activemq.jndi.JNDIReferenceFactory" 
+    physicalName="ExtSystemReceiverQueue"/>
+	
+	<Resource name="ra/DIGXConnectorAES" 
+	auth="Container"
+	type="com.ofss.fc.infra.cred.Credentials"
+	factory="org.apache.naming.factory.BeanFactory"
+	userId="${digx.connector.aes.userId}"
+	password="${digx.secret.connector.aes.password}"/>
+	
+	<Resource name="ra/DIGXConnectorLIVEEXP" 
+	auth="Container"
+	type="com.ofss.fc.infra.cred.Credentials"
+	factory="org.apache.naming.factory.BeanFactory"
+	userId="${digx.connector.liveexp.userId}"
+	password="${digx.secret.connector.liveexp.password}"/>
+
+	<Resource name="OBDXBU10_B1A1" 
+        	auth="Container" 
+                type="oracle.jdbc.pool.OracleDataSource" 
+                maxActive="100" 
+                maxIdle="30" 
+                maxWait="10000" 
+                user="${digx.db.bu10b1a1.user}" 
+                password="${digx.secret.db.bu10b1a1.password}" 
+                driverClassName="oracle.jdbc.OracleDriver"
+                factory="oracle.jdbc.pool.OracleDataSourceFactory" 
+                url="jdbc:oracle:thin:@${digx.db.bu10b1a1.host}:${digx.db.bu10b1a1.port}/${digx.db.bu10b1a1.sid}" />
+
+	<Resource name="ra/DIGXConnectorBIREPORTS" 
+	auth="Container"
+	type="com.ofss.fc.infra.cred.Credentials"
+	factory="org.apache.naming.factory.BeanFactory"
+	userId="${digx.connector.bireports.userId}"
+	password="${digx.secret.connector.bireports.password}"/>
+	
+	<Resource name="ra/DIGXConnectorFILEUPLOAD" 
+	auth="Container"
+	type="com.ofss.fc.infra.cred.Credentials"
+	factory="org.apache.naming.factory.BeanFactory"
+	userId="${digx.connector.fileupload.userId}"
+	password="${digx.secret.connector.fileupload.password}"/>
+	
+	<Resource name="ra/DIGXConnectorFCM" 
+	auth="Container"
+	type="com.ofss.fc.infra.cred.Credentials"
+	factory="org.apache.naming.factory.BeanFactory"
+	userId="${digx.connector.fcm.userId}"
+	password="${digx.secret.connector.fcm.password}"/>
+	
+	<Resource name="ra/DIGXConnectorAPNS" 
+	auth="Container"
+	type="com.ofss.fc.infra.cred.Credentials"
+	factory="org.apache.naming.factory.BeanFactory"
+	userId="${digx.connector.apns.userId}"
+	password="${digx.secret.connector.apns.password}"/>
+	
+	<Resource name="ra/DIGXConnectorIPM_OBDX_BU" 
+	auth="Container"
+	type="com.ofss.fc.infra.cred.Credentials"
+	factory="org.apache.naming.factory.BeanFactory"
+	userId="${digx.connector.ipmobdxbu.userId}"
+	password="${digx.secret.connector.ipmobdxbu.password}"/>
+	
+	<Resource name="ra/DIGXConnectorIPM_OBDX_BU1" 
+	auth="Container"
+	type="com.ofss.fc.infra.cred.Credentials"
+	factory="org.apache.naming.factory.BeanFactory"
+	userId="${digx.connector.ipmobdxbu1.userId}"
+	password="${digx.secret.connector.ipmobdxbu1.password}"/>
+	
+	<Resource name="ra/DIGXConnectorGENERICREST" 
+	auth="Container"
+	type="com.ofss.fc.infra.cred.Credentials"
+	factory="org.apache.naming.factory.BeanFactory"
+	userId="${digx.connector.genericrest.userId}"
+	password="${digx.secret.connector.genericrest.password}"/>
+	
+	<Resource name="ra/DIGXConnectorIDCS" 
+	auth="Container"
+	type="com.ofss.fc.infra.cred.Credentials"
+	factory="org.apache.naming.factory.BeanFactory"
+	userId="${digx.connector.idcs.userId}"
+	password="${digx.secret.connector.idcs.password}"/>
+	
+	<Resource name="ra/DIGXConnectorOBTFPM_14.3" 
+	auth="Container"
+	type="com.ofss.fc.infra.cred.Credentials"
+	factory="org.apache.naming.factory.BeanFactory"
+	userId="${digx.connector.obtfpm143.userId}"
+	password="${digx.secret.connector.obtfpm143.password}"/>
+	
+	<Resource name="ra/DIGXConnectorOBLM" 
+	auth="Container"
+	type="com.ofss.fc.infra.cred.Credentials"
+	factory="org.apache.naming.factory.BeanFactory"
+	userId="${digx.connector.oblm.userId}"
+	password="${digx.secret.connector.oblm.password}"/>
+	
+	<Resource name="ra/DIGXConnectorMO_IPM" 
+	auth="Container"
+	type="com.ofss.fc.infra.cred.Credentials"
+	factory="org.apache.naming.factory.BeanFactory"
+	userId="${digx.connector.moipm.userId}"
+	password="${digx.secret.connector.moipm.password}"/>
+	
+	<Resource name="ra/DIGXConnectorOBCFPM" 
+	auth="Container"
+	type="com.ofss.fc.infra.cred.Credentials"
+	factory="org.apache.naming.factory.BeanFactory"
+	userId="${digx.connector.obcfpm.userId}"
+	password="${digx.secret.connector.obcfpm.password}"/>
+	
+	
+	<Resource name="ra/DIGXConnectorOBIC" 
+	auth="Container"
+	type="com.ofss.fc.infra.cred.Credentials"
+	factory="org.apache.naming.factory.BeanFactory"
+	userId="${digx.connector.obic.userId}"
+	password="${digx.secret.connector.obic.password}"/>
+	
+	<Resource name="ra/DIGXConnectorOBSCF" 
+	auth="Container"
+	type="com.ofss.fc.infra.cred.Credentials"
+	factory="org.apache.naming.factory.BeanFactory"
+	userId="${digx.connector.obscf.userId}"
+	password="${digx.secret.connector.obscf.password}"/>
+	
+	<Resource name="ra/DIGXConnectorOBVAM" 
+	auth="Container"
+	type="com.ofss.fc.infra.cred.Credentials"
+	factory="org.apache.naming.factory.BeanFactory"
+	userId="${digx.connector.obvam.userId}"
+	password="${digx.secret.connector.obvam.password}"/>
+	
+	<Resource name="ra/DIGXConnectorASP" 
+	auth="Container"
+	type="com.ofss.fc.infra.cred.Credentials"
+	factory="org.apache.naming.factory.BeanFactory"
+	userId="${digx.connector.asp.userId}"
+	password="${digx.secret.connector.asp.password}"/>
+	
+	<Resource name="ra/DIGXConnectorINV" 
+	auth="Container"
+	type="com.ofss.fc.infra.cred.Credentials"
+	factory="org.apache.naming.factory.BeanFactory"
+	userId="${digx.connector.inv.userId}"
+	password="${digx.secret.connector.inv.password}"/>
+	
+	<Resource name="ra/DIGXConnectorREWARDS" 
+	auth="Container"
+	type="com.ofss.fc.infra.cred.Credentials"
+	factory="org.apache.naming.factory.BeanFactory"
+	userId="${digx.connector.rewards.userId}"
+	password="${digx.secret.connector.rewards.password}"/>
+
+</Context>

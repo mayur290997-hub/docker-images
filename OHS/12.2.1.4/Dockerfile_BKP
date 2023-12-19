@@ -1,0 +1,46 @@
+FROM $baseOsImage
+
+MAINTAINER $maintainer
+
+RUN groupadd -g 1000  $osUsrGroup && \
+    useradd -d $osUsrHomeDir -u 1000 -g $osUsrGroup -m -s /bin/bash $osUsrName && \
+	mkdir -p $obdxDir && \
+    chmod -R 777 $obdxDir  && \
+	mkdir -p $OhsDir && \
+    chmod -R 777 $OhsDir  && \
+    echo "proxy=$proxyAddress" >> /etc/yum.conf && \
+    echo "http_proxy = $proxyAddress" >> /etc/wgetrc && \
+    yum -y install $yumInstallList
+
+ENV HOSTNAME=$hostname 				\
+    USR_HOME=$osUsrHomeDir             \
+    JAVA_HOME=$javaHomeDir              \
+    SCRIPTS_DIR=$scriptsDir				\
+    SOFTWAREDIR=$softwareDir            \
+    ORACLE_HOME=$oracleOhsHomeDir		
+ 
+
+# Perform the following actions as the oracle user
+USER $osUsrName
+
+# Unzip software
+RUN mkdir -p ${ORACLE_HOME} && \
+    mkdir -p ${SCRIPTS_DIR}
+	
+COPY --chown=$osUsrName:$osUsrGroup scripts/* ${SCRIPTS_DIR}/ 
+
+RUN mkdir -p ${SOFTWAREDIR} && \
+	chmod u+x ${SCRIPTS_DIR}/* && \
+	cd ${USR_HOME}  && \
+	wget --no-proxy $softwareJavaUrl/$javaZipName && \
+	unzip -oq $javaZipName &&\
+	rm -rf $javaZipName && \
+	chmod -R 755 ${JAVA_HOME}  && \
+	cd ${SOFTWAREDIR}		&& \
+	wget --no-proxy $softwareOhsUrl/$ohsZipName && \
+	unzip -oq $ohsZipName && \
+	rm -rf $ohsZipName && \
+	chmod -R 755 $fmwOhsJarName && \
+	${SOFTWAREDIR}/$fmwOhsJarName -silent -responseFile ${SOFTWAREDIR}/install.file -invPtrLoc ${SOFTWAREDIR}/oraInst.loc ORACLE_HOME=${ORACLE_HOME} && \
+	sh ${SCRIPTS_DIR}/createOhsDomain.sh $$ \
+	rm -rf $fmwOhsJarName

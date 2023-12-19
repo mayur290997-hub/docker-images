@@ -1,0 +1,88 @@
+# Set the base image to Oracle Linux 7 - Slim
+FROM $baseOsImage
+
+# File Author $maintainer
+
+LABEL maintainer=$maintainer
+
+# Define fixed (build time) environment variables.
+ENV ORACLE_BASE=$oracleDbBaseDir                                      \
+    ORACLE_HOME=$oracleDbHomeDir            \
+    ORA_INVENTORY=$oraInventoryDir     \
+    SOFTWARE_DIR=$softwareDir                                             \
+    SCRIPTS_DIR=$scriptsDir                                          \
+    ORAENV_ASK=$oraEnvAsk                                                      \
+    ORACLE_SID=$OracleSid                                                   \
+    SYS_PASSWORD=$SysPassword    \
+	USER_HOME=$osUsrHomeDir     \
+	PATH=$oracleDbHomeDir/bin:$PATH
+
+RUN echo "enableProxy=1" >> /etc/yum.conf                                  && \
+    echo "proxy=$proxyAddress" >> /etc/yum.conf        && \
+    yum -y install $yumInstallList && \
+    groupadd -g 1000 $osUsrGroup && \
+    useradd -d $osUsrHomeDir -u 1000 -g $osUsrGroup -G $osDbaGroup,oper -m -s /bin/bash $osUsrName  && \
+    rm -Rf /var/cache/yum     && \
+	mkdir -p ${SCRIPTS_DIR}   && \
+    mkdir -p $obdxDir							 && \
+    mkdir -p $obdxDir/oradata                                            && \
+    chmod -R 755 ${SCRIPTS_DIR}/                                         && \
+    chown -R $osUsrName.$osDbaGroup ${USER_HOME}                         && \
+	chown -R $osUsrName.$osDbaGroup ${SCRIPTS_DIR}  					 &&\
+    chmod 775 ${USER_HOME}                                                && \
+    chmod g+s ${USER_HOME}										
+
+COPY scripts/* ${SCRIPTS_DIR}/
+
+
+# Perform the following actions as the oracle user
+USER $osUsrName
+
+# Unzip software
+RUN mkdir -p ${ORACLE_HOME}   &&\
+    mkdir -p ${SOFTWARE_DIR}  &&\
+	cd ${SOFTWARE_DIR} && \
+    wget $softwareDbUrl/$DbSWZip && \
+	cd ${ORACLE_HOME}				&& \
+    unzip -oq ${SOFTWARE_DIR}/$DbSWZip     && \
+    rm -rf ${SOFTWARE_DIR}/$DbSWZip            && \
+    ${ORACLE_HOME}/runInstaller -ignorePrereq                                  \
+    -waitforcompletion -silent                                                 \
+    -responseFile ${ORACLE_HOME}/install/response/db_install.rsp               \
+    oracle.install.option=INSTALL_DB_SWONLY                                    \
+    ORACLE_HOSTNAME=$hostname                                       \
+    UNIX_GROUP_NAME=$osDbaGroup                                                        \
+    INVENTORY_LOCATION=${ORA_INVENTORY}                                       \
+    SELECTED_LANGUAGES=en,en_GB                                                \
+    ORACLE_HOME=${ORACLE_HOME}                                               \
+    ORACLE_BASE=${ORACLE_BASE}                                                \
+    oracle.install.db.InstallEdition=EE                                        \
+    oracle.install.db.OSDBA_GROUP=$osDbaGroup                                          \
+    oracle.install.db.OSBACKUPDBA_GROUP=$osDbaGroup                                    \
+    oracle.install.db.OSDGDBA_GROUP=$osDbaGroup                                        \
+    oracle.install.db.OSKMDBA_GROUP=$osDbaGroup                                        \
+    oracle.install.db.OSRACDBA_GROUP=$osDbaGroup                                       \
+    SECURITY_UPDATES_VIA_MYORACLESUPPORT=false                                 \
+    DECLINE_SECURITY_UPDATES=true; exit 0
+
+
+# Run the root scripts
+USER root
+
+RUN sh ${ORACLE_HOME}/root.sh                                     && \
+	sh ${ORA_INVENTORY}/orainstRoot.sh
+
+# Perform the following actions as the oracle user
+USER $osUsrName
+
+RUN sh ${SCRIPTS_DIR}/db_create.sh
+
+# Set base directory
+# # ------------------
+WORKDIR ${USER_HOME}
+
+VOLUME ["$obdxDir"]
+EXPOSE 1521 1521
+HEALTHCHECK --interval=5m --start-period=10m \
+   CMD lsnrctl status | grep '"${ORACLE_SID}", status READY' && exit 0
+#

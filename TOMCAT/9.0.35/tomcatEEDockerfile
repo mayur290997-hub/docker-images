@@ -1,0 +1,46 @@
+FROM oraclelinux
+LABEL maintainer="digital_devops@oracle.com"
+
+RUN groupadd -g 1000  devops && \
+    useradd -d /home/devops -u 1000 -g devops -m -s /bin/bash devops && \
+    echo "proxy=http://www-proxy.us.oracle.com:80/" >> /etc/yum.conf && \
+    echo "http_proxy = https://www-proxy.us.oracle.com:80/" >> /etc/wgetrc && \
+    yum install -y unzip tar curl procps hostname vim wget netcat openssh-server
+    
+ENV HOSTNAME=obdxtomcat.in.oracle.com               \
+    USR_HOME=/home/devops                           \
+    JAVA_HOME=/home/devops/jdk1.8.0_241              \
+    CATALINA_HOME=/scratch/app/product/apache-tomee-plume-8.0.2   \
+    SW_BASE_DIR=/scratch/app/product  \
+    PATH=$CATALINA_HOME/bin:$PATH   \
+    PATH=$JAVA_HOME/bin:$PATH
+ 
+USER root
+ 
+RUN mkdir -p ${SW_BASE_DIR} && \
+    chown -R devops:devops ${SW_BASE_DIR} 
+	
+# Perform the following actions as the oracle user
+USER devops
+
+RUN cd ${USR_HOME}  && \
+    wget --no-proxy http://whf00jeo:8080/software/JAVA/jdk1.8.0_241.zip && \
+    unzip -oq jdk1.8.0_241.zip &&\
+    rm -rf jdk1.8.0_241.zip && \
+    chmod -R 755 ${JAVA_HOME}  && \
+    cd ${SW_BASE_DIR}     && \
+    wget --no-proxy http://whf00jeo:8080/software/TOMCATEE/8.0.2/apache-tomee-8.0.2-plume.tar.gz  && \
+    tar xvf apache-tomee-8.0.2-plume.tar.gz  && \
+    chmod u+x ${SW_BASE_DIR}/*  && \
+    rm -rf apache-tomee-8.0.2-plume.tar.gz
+	
+COPY --chown=devops:devops lib_Added/* ${CATALINA_HOME}/lib/ 
+COPY --chown=devops:devops tomcatConfig.sh ${CATALINA_HOME}/bin/
+
+RUN sh -x ${CATALINA_HOME}/bin/tomcatConfig.sh ${CATALINA_HOME}
+	 
+EXPOSE 8080
+EXPOSE 8000
+
+WORKDIR ${CATALINA_HOME}/bin
+CMD ["catalina.sh", "run"]
